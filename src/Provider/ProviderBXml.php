@@ -9,7 +9,16 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 class ProviderBXml extends AbstractProvider
 {
-    private const URL = 'http://comparador_seguro_coches.test/provider-b/quote';
+    private string $baseUrl;
+
+    public function __construct(
+        \Symfony\Contracts\HttpClient\HttpClientInterface $httpClient,
+        \Psr\Log\LoggerInterface $logger,
+        string $providerBaseUrl
+    ) {
+        parent::__construct($httpClient, $logger);
+        $this->baseUrl = $providerBaseUrl;
+    }
 
     public function getName(): string
     {
@@ -23,7 +32,7 @@ class ProviderBXml extends AbstractProvider
 
     protected function getUrl(): string
     {
-        return self::URL;
+        return $this->baseUrl . '/provider-b/quote';
     }
 
     protected function buildRequestOptions(int $driverAge, string $carType, string $carUse): array

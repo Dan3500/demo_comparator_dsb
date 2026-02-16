@@ -15,23 +15,26 @@ class ProviderService
     /**
      * Provider configurations.
      * To add a new provider, simply add a new entry to this array.
+     * URLs are built dynamically from the PROVIDER_BASE_URL env variable.
      */
-    private const PROVIDERS = [
-        'provider-a' => [
-            'url' => 'http://comparador_seguro_coches.test/provider-a/quote',
-            'format' => 'json'
-        ],
-        'provider-b' => [
-            'url' => 'http://comparador_seguro_coches.test/provider-b/quote',
-            'format' => 'xml'
-        ],
-    ];
+    private array $providers;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
         private readonly bool $campaignActive = false,
     ) {
+        $baseUrl = rtrim($_ENV['PROVIDER_BASE_URL'] ?? $_SERVER['PROVIDER_BASE_URL'] ?? '', '/');
+        $this->providers = [
+            'provider-a' => [
+                'url' => $baseUrl . '/provider-a/quote',
+                'format' => 'json'
+            ],
+            'provider-b' => [
+                'url' => $baseUrl . '/provider-b/quote',
+                'format' => 'xml'
+            ],
+        ];
     }
 
     /**
@@ -134,7 +137,7 @@ class ProviderService
         $errors = [];
         $responses = [];
 
-        foreach (self::PROVIDERS as $providerName => $config) {
+        foreach ($this->providers as $providerName => $config) {
             $this->logger->debug('Calling provider', [
                 'provider' => $providerName,
                 'url' => $config['url'],

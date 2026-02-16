@@ -3,6 +3,8 @@
 namespace App\Provider;
 
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * provider-a funcitionality for quote (JSON).
@@ -12,12 +14,12 @@ class ProviderAJson extends AbstractProvider
     private string $baseUrl;
 
     public function __construct(
-        \Symfony\Contracts\HttpClient\HttpClientInterface $httpClient,
-        \Psr\Log\LoggerInterface $logger,
+        HttpClientInterface $httpClient,
+        LoggerInterface $logger,
         string $providerBaseUrl
     ) {
         parent::__construct($httpClient, $logger);
-        $this->baseUrl = $providerBaseUrl;
+        $this->baseUrl = rtrim($providerBaseUrl, '/');
     }
 
     public function getName(): string
